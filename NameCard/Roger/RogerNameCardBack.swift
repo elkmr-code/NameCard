@@ -25,55 +25,61 @@ struct RogerNameCardBack: View {
                 endPoint: .bottomLeading
             )
             
-            VStack(spacing: 24) {
-                Spacer()
+            VStack(spacing: 0) {
+                // Top spacer
+                Spacer(minLength: 16)
                 
                 // Organization info with modern styling
-                VStack(spacing: 16) {
+                VStack(spacing: 8) {
                     Text(contact.organization)
-                        .font(.system(size: 20, weight: .semibold, design: .rounded))
+                        .font(.system(size: 16, weight: .semibold, design: .rounded))
                         .foregroundStyle(.white)
                         .multilineTextAlignment(.center)
                         .opacity(organizationOpacity)
                         .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 1)
+                        .lineLimit(2)
 
                     Text(contact.department)
-                        .font(.system(size: 14, weight: .medium, design: .rounded))
+                        .font(.system(size: 12, weight: .medium, design: .rounded))
                         .foregroundStyle(.white.opacity(0.8))
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 8)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 4)
                         .background(
                             Capsule()
                                 .fill(.white.opacity(0.2))
                         )
                         .opacity(organizationOpacity)
+                        .lineLimit(1)
                 }
                 
-                Spacer()
+                // Middle spacer
+                Spacer(minLength: 12)
 
                 // QR Code section with modern design
-                VStack(spacing: 16) {
+                VStack(spacing: 8) {
                     ZStack {
                         // QR Code background
-                        RoundedRectangle(cornerRadius: 12)
+                        RoundedRectangle(cornerRadius: 10)
                             .fill(.white)
-                            .frame(width: 100, height: 100)
-                            .shadow(color: .black.opacity(0.2), radius: 8, x: 0, y: 4)
+                            .frame(width: 80, height: 80)
+                            .shadow(color: .black.opacity(0.2), radius: 4, x: 0, y: 2)
                         
                         RogerQRCodeView(contactInfo: contact.toVCard())
-                            .frame(width: 90, height: 90)
+                            .frame(width: 72, height: 72)
                             .scaleEffect(qrCodeScale)
                     }
 
                     Text("SCAN TO CONNECT")
-                        .font(.system(size: 11, weight: .semibold, design: .rounded))
+                        .font(.system(size: 9, weight: .semibold, design: .rounded))
                         .foregroundStyle(.white.opacity(0.8))
-                        .tracking(1.5)
+                        .tracking(1.0)
                 }
 
-                Spacer()
+                // Bottom spacer
+                Spacer(minLength: 16)
             }
-            .padding(.horizontal, 28)
+            .padding(.horizontal, 20)
+            .padding(.vertical, 12)
         }
         .clipShape(RoundedRectangle(cornerRadius: 16))
         .scaleEffect(x: -1, y: 1) // Flip horizontally for correct reading when card is flipped

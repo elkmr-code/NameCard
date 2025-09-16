@@ -6,13 +6,47 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct RogerView: View {
     @State private var isFlipped = false
     @State private var rotationAngle: Double = 0
     @State private var cardScale: CGFloat = 1.0
     
-    let contact: Contact
+    let contact: Contact?
+    let storedContact: StoredContact?
+    
+    init(contact: Contact) {
+        self.contact = contact
+        self.storedContact = nil
+    }
+    
+    init(storedContact: StoredContact) {
+        self.contact = nil
+        self.storedContact = storedContact
+    }
+    
+    // Convert StoredContact to Contact for display
+    private var displayContact: Contact {
+        if let contact = contact {
+            return contact
+        } else if let storedContact = storedContact {
+            return Contact(
+                firstName: storedContact.name.components(separatedBy: " ").first ?? "",
+                lastName: storedContact.name.components(separatedBy: " ").dropFirst().joined(separator: " "),
+                title: storedContact.title,
+                organization: storedContact.category?.name ?? "Unknown Organization",
+                email: storedContact.email,
+                phone: "+1-555-000-0000", // Default phone
+                address: "Unknown Address", // Default address
+                website: "example.com", // Default website
+                department: "Unknown Department" // Default department
+            )
+        } else {
+            // Fallback to sample data
+            return Contact.rogerSampleData
+        }
+    }
 
     var body: some View {
         ZStack {
@@ -32,11 +66,11 @@ struct RogerView: View {
             ZStack {
                 if !isFlipped {
                     // Front of card
-                    RogerNameCardFront(contact: contact)
+                    RogerNameCardFront(contact: displayContact)
                         .opacity(isFlipped ? 0 : 1)
                 } else {
                     // Back of card
-                    RogerNameCardBack(contact: contact)
+                    RogerNameCardBack(contact: displayContact)
                         .opacity(isFlipped ? 1 : 0)
                 }
             }
@@ -86,6 +120,20 @@ struct RogerView: View {
     }
 }
 
-#Preview {
+#Preview("With Contact") {
     RogerView(contact: Contact.rogerSampleData)
+}
+
+#Preview("With StoredContact") {
+    let sampleCategory = ContactCategory(id: UUID(), name: "University")
+    let sampleStoredContact = StoredContact(
+        id: UUID(),
+        name: "Roger Chen",
+        title: "Senior Smooth Replies Manager",
+        email: "roger@liftwithroger.com"
+    )
+    sampleStoredContact.category = sampleCategory
+    
+    return RogerView(storedContact: sampleStoredContact)
+        .modelContainer(for: [StoredContact.self, ContactCategory.self], inMemory: true)
 }
